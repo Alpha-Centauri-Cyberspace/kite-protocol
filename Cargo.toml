@@ -1,0 +1,23 @@
+[package]
+name = "kite-protocol"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+description = "Wire-format types for the Kite webhook delivery protocol and Kite Mesh."
+repository = "https://github.com/Alpha-Centauri-Cyberspace/kite-protocol"
+homepage = "https://github.com/Alpha-Centauri-Cyberspace/kite-protocol"
+readme = "README.md"
+keywords = ["kite", "cloudevents", "webhooks", "protocol"]
+categories = ["network-programming", "api-bindings"]
+
+[dependencies]
+cloudevents-sdk = { version = "0.9", features = ["axum", "reqwest"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+uuid = { version = "1", features = ["v7", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+thiserror = "2"
+ts-rs = { version = "10", features = ["serde-json-impl", "uuid-impl", "chrono-impl"] }
+
+[dev-dependencies]
+anyhow = "1"
