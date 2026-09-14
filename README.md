@@ -17,7 +17,7 @@
 
 ---
 
-`kite-protocol` is the single source of truth for the Kite wire format. Every client and server in the Kite ecosystem pins against this crate — the CLI, the relay server, the mesh daemon, and any third-party agent that wants to speak the protocol directly.
+`kite-protocol` defines the shared Kite wire-format types used by the CLI and private relay server. Third-party clients can use this crate to construct and parse protocol messages.
 
 ## Use
 
@@ -26,35 +26,42 @@
 kite-protocol = "0.1"
 ```
 
+This constructs a handshake message without opening a connection. Replace the placeholder API key and team ID with your configured values before connecting.
+
 ```rust
-use kite_protocol::{ClientMessage, ServerMessage};
+use kite_protocol::ClientMessage;
+
+let api_key = "your-api-key".to_owned();
+let team_id = "your-team-id".to_owned();
 
 let connect = ClientMessage::Connect {
-    version: "0.1".into(),
+    version: 1,
     token: api_key,
     team_id,
-    scopes: vec!["events.read".into()],
+    scopes: vec!["source:github".into()],
+    client_id: None,
 };
 ```
 
 ## What's inside
 
 - **WebSocket framing** — `ClientMessage` and `ServerMessage` enums covering `connect`, `request`, `event`, `response`, `error`, `quota_snapshot`, and `billing_block`.
-- **CloudEvents extensions** — Kite-specific metadata on top of [CloudEvents v1.0](https://cloudevents.io): `team_id`, `source`, `importance`, `signature`, delivery cursors.
-- **Signature helpers** — HMAC-SHA256 verification for outbound webhook signatures.
+- **CloudEvents extensions** — helpers for `kiteseq`, `kitesummary`, `kiteoriginalheaders`, and federation metadata on top of [CloudEvents v1.0](https://cloudevents.io).
+- **Agent messages** — payload types and helpers for `com.kite.agent.message` events.
 - **TypeScript bindings** — auto-generated via [`ts-rs`](https://crates.io/crates/ts-rs) and checked into [`bindings/`](./bindings) for downstream TS consumers.
 
 ## Versioning
 
-Pre-1.0: **minor bumps are breaking** on the wire; patches are fully wire-compatible. Every consumer (kite-cli, the Kite server, kite-mesh) pins a compatible minor and ships a coordinated release when this crate rolls.
+Pre-1.0: wire-format breaking changes require a **minor version bump**; patches are wire-compatible. Breaking changes need a coordinated release across affected consumers.
 
 If you're building a third-party agent, pin to `"0.1"` and track release notes.
 
 ## Consumers
 
 - **[kite-cli](https://github.com/Alpha-Centauri-Cyberspace/kite-cli)** — the universal webhook adapter CLI.
-- **[kite-mesh](https://github.com/Alpha-Centauri-Cyberspace/kite-mesh)** — P2P capability discovery for AI agents.
 - **Kite server** — the relay at `api.getkite.sh` (private).
+
+For mesh-layer development, see [kite-mesh](https://github.com/Alpha-Centauri-Cyberspace/kite-mesh).
 
 ## Contributing
 

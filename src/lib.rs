@@ -1,3 +1,5 @@
+#![doc = include_str!("../README.md")]
+
 pub mod agent_message;
 pub mod extensions;
 pub mod ws_messages;
